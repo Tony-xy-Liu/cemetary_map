@@ -1,0 +1,8 @@
+### npm updates
+- minor
+npm update
+
+- major
+npm install -g npm-check-updates
+ncu -u
+npm install

@@ -1,0 +1,10 @@
+**/.ipynb_checkpoints
+**/__pycache__
+**/node_modules
+
+**/credentials
+**/server/certificate
+**/server/secrets
+**/server/public
+**/website/build
+/logs
