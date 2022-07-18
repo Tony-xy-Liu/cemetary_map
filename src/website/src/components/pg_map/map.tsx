@@ -118,25 +118,27 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                     </Collapse>
                 </Grid>
                 <Grid item xs={8}>
-                    <Stack direction="row" spacing={HSPACE}>
-                        <Button 
-                            variant="contained"
-                            onClick={()=>this.search(true)}
-                        >
-                            <SearchIcon/>
-                        </Button>
-                        <TextField
-                            fullWidth
-                            label="Find the departed by name"
-                            variant="outlined"
-                            onChange={(v)=>{
-                                this.searchVal = v.target.value
-                                this.search()
-                                this.setState({showDot: false})
-                            }}
-                            onKeyDown={(k)=>{k.code==="Enter" && this.search(true)}}
-                        />
-                    </Stack>
+                    <Collapse in={this.state.authenticated}>
+                        <Stack direction="row" spacing={HSPACE}>
+                            <Button 
+                                variant="contained"
+                                onClick={()=>this.search(true)}
+                            >
+                                <SearchIcon/>
+                            </Button>
+                            <TextField
+                                fullWidth
+                                label="Find the departed by name"
+                                variant="outlined"
+                                onChange={(v)=>{
+                                    this.searchVal = v.target.value
+                                    this.search()
+                                    this.setState({showDot: false})
+                                }}
+                                onKeyDown={(k)=>{k.code==="Enter" && this.search(true)}}
+                            />
+                        </Stack>
+                    </Collapse>
                 </Grid>
                 <Grid item xs={8} spacing={VSPACE} style={{paddingTop: "2em"}}>
                     <Collapse in={this.state.authenticated}>
