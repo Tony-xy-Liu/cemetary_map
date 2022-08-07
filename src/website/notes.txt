@@ -6,3 +6,5 @@ npm update
 npm install -g npm-check-updates
 ncu -u
 npm install
+
+https://github.com/boppreh/mouse

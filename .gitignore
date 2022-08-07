@@ -7,4 +7,6 @@
 **/server/secrets
 **/server/public
 **/website/build
+**/website/public/assets/password.txt
+**/website/public/assets/plots.tsv
 /logs

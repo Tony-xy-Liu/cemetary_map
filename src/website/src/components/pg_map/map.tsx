@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react"
 import { Stack, Typography, Grid, Button, TextField, 
     Collapse, FormGroup, FormControlLabel, Checkbox} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
@@ -20,29 +20,56 @@ const MapImage = () => {
 
 interface ComponentState {
     showDot: boolean
-    password: string
+    passwordAttempt: string
     authenticated: boolean
     acceptCookies: boolean
+    passwordColor: "primary" | "error"
+    mapSize: number[]
+    zoom: number
+    baseZoom: number
+    zoomOffset: number[]
 }
 
 export class MapComponent extends React.Component<MapProps, ComponentState> {
     private readonly COOKIES: Cookies = new Cookies() 
+    private PASSWORD: String = ""
     private searchVal: string = ""
     private lastSearch: number = Date.now()
+
     constructor(props: MapProps) {
         super(props)
         this.searchVal = ""
         this.state = {
             showDot: false,
-            password: "",
+            passwordAttempt: "",
             authenticated: false,
-            acceptCookies: false
+            acceptCookies: false,
+            passwordColor: "primary",
+            mapSize: [0, 0],
+            zoom: 1,
+            baseZoom: 1,
+            zoomOffset: [0, 0]
         }
     }
 
     public componentDidMount() {
-    }
+        const auth = this.COOKIES.get('auth')
+        fetch("assets/password.txt")
+            .then((res) => {
+                return res.text()
+            }).then((pass) => {
+                this.PASSWORD = pass
+                const valid = auth && auth == pass
+                if (valid) {
+                    this.setState({
+                        authenticated: true
+                    })
+                }
+            })
 
+        this.onResize()
+        window.addEventListener('resize', ()=>this.onResize());
+    }
 
     private search(force: boolean=false){
         const PERIOD = 500
@@ -65,9 +92,52 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
         }
     }
 
-    private checkPassword() {
-        // todo
-        this.setState({authenticated: true})
+    private checkPassword(attempt: string) {
+        const match = this.PASSWORD && attempt == this.PASSWORD
+        return match
+    }
+
+    private submitPassword() {
+        const match = this.checkPassword(this.state.passwordAttempt)
+
+        if (!match) {
+            alert("wrong password")
+        }
+
+        if (match && this.state.acceptCookies) {
+            this.COOKIES.set('auth', this.state.passwordAttempt, {expires: new Date(Date.now()+86400000*30)})
+        }
+
+        this.setState({
+            authenticated: match,
+            passwordColor: match? "primary" : "error",
+            passwordAttempt: match? this.state.passwordAttempt : "",
+        })
+    }
+
+    private onResize() {
+        const rwidth = window.innerWidth;
+        const width = rwidth<900? rwidth : rwidth*8/12
+        const height = window.innerHeight;
+        // console.log([l<900, sl])
+        const z = rwidth<900? 11/8 : 1
+        this.setState({
+            mapSize: [width, height],
+            baseZoom: z,
+            zoom: z
+        })
+    }
+
+    private onMapClick(e: any) {
+        // const v = e.evt.clientX? e.evt : e.evt.changedTouches[0]
+        const v = e.currentTarget.pointerPos
+        const s = 0.6
+        const maxZoom = this.state.baseZoom * 3
+        const zoomed = this.state.zoom < maxZoom
+        this.setState({
+            zoom: zoomed? maxZoom: this.state.baseZoom,
+            zoomOffset: zoomed? [v.x*s, v.y*s] : [0, 0]
+        })
     }
 
     render(): JSX.Element {
@@ -84,7 +154,7 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
 
         return (
             <Grid container justifyContent='center' style={outerStyle}>
-                <Grid item xs={8}>
+                <Grid item md={8} xs={12}>
                     <Collapse in={!this.state.authenticated} style={{paddingTop: "2em", paddingBottom: "2em"}}>
                         <FormGroup>
                             <Grid container justifyContent="center" spacing={1}>
@@ -94,8 +164,18 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={FORM_WIDTH}>
-                                    <TextField label="Password" fullWidth variant="filled" required
-                                        onChange={(x)=>this.setState({password: x.target.value})} />
+                                    <TextField
+                                        type="password" 
+                                        label="Password"
+                                        fullWidth
+                                        variant="filled"
+                                        required
+                                        color={this.state.passwordColor}
+                                        value={this.state.passwordAttempt}
+                                        onChange={(x)=>this.setState({
+                                            passwordAttempt: x.target.value,
+                                            passwordColor: "primary",
+                                        })} />
                                 </Grid>
                                 <Grid item xs={FORM_WIDTH}>
                                     <Stack direction="row" justifyContent="right" spacing={HSPACE}>
@@ -107,7 +187,7 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                                                 /> }
                                             label="Accept cookie to remember me for 30 days" />
                                         <Button
-                                            onClick={()=>this.checkPassword()}
+                                            onClick={()=>this.submitPassword()}
                                             variant="outlined">
                                             Submit
                                         </Button>
@@ -117,7 +197,7 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                         </FormGroup>
                     </Collapse>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item md={8} xs={12}>
                     <Collapse in={this.state.authenticated}>
                         <Stack direction="row" spacing={HSPACE}>
                             <Button 
@@ -140,11 +220,17 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                         </Stack>
                     </Collapse>
                 </Grid>
-                <Grid item xs={8} spacing={VSPACE} style={{paddingTop: "2em"}}>
+                <Grid item md={8} xs={12} spacing={VSPACE} style={{paddingTop: "2em"}}>
                     <Collapse in={this.state.authenticated}>
                         <Stage
-                            width={window.innerWidth*8/12}
-                            height={window.innerHeight-270}
+                            width={this.state.mapSize[0]}
+                            height={this.state.mapSize[1]}
+                            onTap={(e)=>this.onMapClick(e)}
+                            onClick={(e)=>this.onMapClick(e)}
+                            scaleX={this.state.zoom}
+                            scaleY={this.state.zoom}
+                            offsetX={this.state.zoomOffset[0]}
+                            offsetY={this.state.zoomOffset[1]}
                         >
                             <Layer>
                                 <MapImage/>
