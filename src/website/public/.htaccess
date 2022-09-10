@@ -1,16 +1,3 @@
-### npm updates
-- minor
-npm update
-
-- major
-npm install -g npm-check-updates
-ncu -u
-npm install
-
-https://github.com/boppreh/mouse
-
-add following to .htaccess file inside build folder
-
 <IfModule mod_rewrite.c>
 RewriteEngine On    
 RewriteBase /    
@@ -20,4 +7,3 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-l    
 RewriteRule . /index.html [L]   
 </IfModule>
-

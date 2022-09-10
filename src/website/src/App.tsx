@@ -3,7 +3,7 @@ import './App.css';
 import { createTheme, ThemeProvider, Theme } from '@mui/material/styles';
 import { AppProps, HeaderProps, MapProps } from './models/props';
 import { HeaderComponent } from './components/header/header';
-import { MapComponent } from './components/pg_map/map';
+import { SearchComponent } from './components/pg_map/search_page';
 
 // ts typing for mui theme
 declare module '@mui/material/styles' {
@@ -56,9 +56,9 @@ export class App extends React.Component<AppProps, AppState> {
     }
     return (
       <ThemeProvider theme={THEME}>
-        <HeaderComponent {...HeaderProps}/>
+        {/* <HeaderComponent {...HeaderProps}/> */}
         <div className='app-container'>
-          <MapComponent {...DownloadsProps} />
+          <SearchComponent {...DownloadsProps} />
         </div>
       </ThemeProvider>
     )

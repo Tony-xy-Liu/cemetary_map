@@ -9,6 +9,9 @@ for arg in "$@"; do
         wdir=`pwd`
         cd src/website
         npm run build
+
+        zip tar
+
         cd $wdir
         exit 0
         ;;

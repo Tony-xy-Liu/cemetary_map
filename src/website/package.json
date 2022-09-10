@@ -2,6 +2,7 @@
   "name": "sholom_cemetary_map",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://templesholom.ca/cemetary_map",
   "proxy": "http://localhost:12001",
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -14,6 +15,7 @@
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
+    "fuse.js": "^6.6.2",
     "konva": "^8.3.10",
     "npm-check-updates": "^15.3.4",
     "react": "^18.1.0",
