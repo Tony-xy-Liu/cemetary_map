@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
 import { createTheme, ThemeProvider, Theme } from '@mui/material/styles';
-import { AppProps, HeaderProps, MapProps } from './models/props';
+import { AppProps, HeaderProps, MapProps, PlotFinderProps } from './models/props';
 import { HeaderComponent } from './components/header/header';
-import { SearchComponent } from './components/pg_map/search_page';
+import { PlotFinderComponent } from './components/pg_map/page';
+import { Collapse } from '@mui/material';
 
 // ts typing for mui theme
 declare module '@mui/material/styles' {
@@ -38,7 +39,9 @@ const THEME: Theme = createTheme({
   },
 });
 
-interface AppState {}
+interface AppState {
+  headerVisible: boolean
+}
 
 export class App extends React.Component<AppProps, AppState> {
   // private apiService: ApiService
@@ -46,19 +49,30 @@ export class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props)
     // this.apiService = new ApiService();
+    this.state = {
+      headerVisible: true
+    }
   }
 
   render(): JSX.Element {
     const HeaderProps: HeaderProps = {}
-    const DownloadsProps: MapProps = {
+    const pageProps: PlotFinderProps = {
       // apiService: this.apiService,
       theme: THEME,
+      setHeaderVisible: (visible: boolean) => {
+        this.setState({
+          headerVisible: visible
+        })
+      }
+
     }
     return (
       <ThemeProvider theme={THEME}>
-        {/* <HeaderComponent {...HeaderProps}/> */}
+        <Collapse in={this.state.headerVisible}>
+          <HeaderComponent {...HeaderProps}/>
+        </Collapse>
         <div className='app-container'>
-          <SearchComponent {...DownloadsProps} />
+          <PlotFinderComponent {...pageProps} />
         </div>
       </ThemeProvider>
     )

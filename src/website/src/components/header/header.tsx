@@ -23,8 +23,9 @@ export class HeaderComponent extends React.Component<HeaderProps, ComponentState
                     <Grid
                         width="100%"
                         container
-                        alignItems="center"
-                        justifyContent="center">
+                        alignItems="left"
+                        justifyContent="left">
+                        <Grid item xs={2}></Grid>
                         <Grid item xs={8}>
                             <Box
                                 component="img"
@@ -32,6 +33,7 @@ export class HeaderComponent extends React.Component<HeaderProps, ComponentState
                                 src="assets/temple_sholom_logo.png"
                             />
                         </Grid>
+                        <Grid item xs={2}></Grid>
                         
                         {/* <Grid item xs={8}></Grid> */}
                     </Grid>
