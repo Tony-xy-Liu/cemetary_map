@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { SearchProps } from '../../models/props';
 import Fuse from 'fuse.js'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Papa from "papaparse";
 
 interface GraveData {
     id: string // zone + number
@@ -37,36 +38,46 @@ export class SearchComponent extends React.Component<SearchProps, ComponentState
             queryResults: [],
         }
 
-        this.graveDataMap = this.props.plotsTsvRaw
-            .split('\n')
-            .map((row) => {
-                row = row.replace('\r', '')
-                const [site, dName, _, burriedDate] = row.split('\t')
-                const [zone, number] = site.split(' - ')
-                const [year, month, day] = burriedDate.split('-')
-                return {
-                    zone: zone, number: number,
-                    searchName: dName.toLowerCase(), displayName: dName,
-                    year: year, month: month, day: day,
-                    id: site,
+        new Promise((resolve, reject) => {
+            Papa.parse(this.props.plotsTsvRaw, {
+                complete: (result) => {
+                    // console.log(result)
+                    resolve(result.data)
                 }
-            }).reduce((acc, curr) => {
-                acc.set(curr.id, curr)
-                return acc
-            }, new Map<string, GraveData>())
+            });
+        }).then((rdata: any) => {
+            const data: string[][] = rdata
+            this.graveDataMap = data
+                .filter((row: string[]) => row.length == 4)
+                .map((row: string[]) => {
+                    // console.log(row)
+                    const [site, dName, _, burriedDate] = row
+                    const [zone, number] = site.split(' - ')
+                    const [year, month, day] = burriedDate.split('-')
+                    return {
+                        zone: zone, number: number,
+                        searchName: dName.toLowerCase(), displayName: dName,
+                        year: year, month: month, day: day,
+                        id: site,
+                    }
+                }).reduce((acc, curr) => {
+                    acc.set(curr.id, curr)
+                    return acc
+                }, new Map<string, GraveData>())
 
-        const optYear: Fuse.IFuseOptions<GraveData>  = {
-            includeScore: true,
-            keys: ['year'],
-        };
-        const optName: Fuse.IFuseOptions<GraveData>  = {
-            includeScore: true,
-            keys: ['searchName'],
-        };
-
-        const graveDataList = Array.from(this.graveDataMap.values())
-        this.fuseYear = new Fuse(graveDataList, optYear)
-        this.fuseName = new Fuse(graveDataList, optName)
+            const optYear: Fuse.IFuseOptions<GraveData>  = {
+                includeScore: true,
+                keys: ['year'],
+            };
+            const optName: Fuse.IFuseOptions<GraveData>  = {
+                includeScore: true,
+                keys: ['searchName'],
+            };
+    
+            const graveDataList = Array.from(this.graveDataMap.values())
+            this.fuseYear = new Fuse(graveDataList, optYear)
+            this.fuseName = new Fuse(graveDataList, optName)
+        })
     }
 
     private search(force: boolean=false){
@@ -171,7 +182,7 @@ export class SearchComponent extends React.Component<SearchProps, ComponentState
         const topResults = results.filter((v, i) => true)
 
         return (
-            <List style={{height: "55vh", overflow: "scroll", borderTop: "1px solid grey", borderBottom: "1px solid grey"}}>
+            <List style={{height: "55vh", overflowY: "auto", borderTop: "1px solid grey", borderBottom: "1px solid grey"}}>
                 {topResults.map((result, i) => {
                     return (
                         <li key={`search_result_${i}`}>

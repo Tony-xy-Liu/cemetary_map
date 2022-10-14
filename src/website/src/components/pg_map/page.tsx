@@ -111,7 +111,7 @@ export class PlotFinderComponent extends React.Component<PlotFinderProps, Compon
                 })
             })
 
-        fetch("assets/plots.tsv")
+        fetch("assets/plots.csv")
             .then((res) => {
                 return res.text()
             }).then((raw) => {

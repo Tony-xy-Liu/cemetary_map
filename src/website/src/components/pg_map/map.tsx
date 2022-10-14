@@ -48,6 +48,7 @@ interface ComponentState {
 export class MapComponent extends React.Component<MapProps, ComponentState> {
     private firstMounted: boolean = false
     private graveDataMap: Map<string, GraveData> = new Map()
+    private metric: string
 
     constructor(props: MapProps) {
         super(props)
@@ -65,6 +66,7 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
             zoomOffset: [0, 0]
         }
 
+        this.metric = window.innerWidth < window.innerHeight? "vw" : "vh"
     }
 
     public componentDidMount() {
@@ -141,10 +143,13 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                 locXY = [220, 400]
                 break
         }
-        const [x, y] = locXY
+        let [x, y] = locXY
+        const assumedLen = 510
+        x = x/assumedLen * 100
+        y = y/assumedLen * 100
         return {
-            left: `${x}px`,
-            top: `${y}px`,
+            left: `${x}${this.metric}`,
+            top: `${y}${this.metric}`,
         }
     }
 
@@ -195,12 +200,12 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                                 }}
                             />
                             <img src="assets/map.png" style={{
-                                width: "100vw", height: "100vw"
+                                width: `100${this.metric}`, height: `100${this.metric}`
                                 }}></img>
                         </a>
                     </TransformComponent>
                 </TransformWrapper>
-                <Typography variant="body1" align="right" style={{
+                <Typography variant="body1" align="right" color="error" style={{
                     fontStyle: "italic", position: "absolute", right: "2vw", top: "2vw"
                 }}>
                     location is to the nearest zone

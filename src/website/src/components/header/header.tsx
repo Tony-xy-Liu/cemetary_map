@@ -25,7 +25,7 @@ export class HeaderComponent extends React.Component<HeaderProps, ComponentState
                         container
                         alignItems="left"
                         justifyContent="left">
-                        <Grid item xs={2}></Grid>
+                        <Grid item md={2} xs={0}></Grid>
                         <Grid item xs={8}>
                             <Box
                                 component="img"
