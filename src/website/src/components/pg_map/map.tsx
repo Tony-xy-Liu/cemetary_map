@@ -184,10 +184,10 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                     <WestIcon fontSize="inherit"/>
                 </Fab>
                 <TransformWrapper
-                    maxScale={6}
+                    maxScale={24}
                 >
                     <TransformComponent>
-                        <a style={{position: "relative", fontSize: "2.5em", height: "100vh"}}>
+                        <a style={{position: "relative", fontSize: "2.5em", height: "100vh", width: "100vw"}}>
 
                             <LocationOnIcon
                                 color="error"
@@ -200,7 +200,7 @@ export class MapComponent extends React.Component<MapProps, ComponentState> {
                                 }}
                             />
                             <img src="assets/map.png" style={{
-                                width: `100${this.metric}`, height: `100${this.metric}`
+                                width: `100${this.metric}`, height: `87${this.metric}`
                                 }}></img>
                         </a>
                     </TransformComponent>
